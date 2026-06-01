@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Guia de Estudos — Infraestrutura de TI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0d0f17;
+    --surface: #141624;
+    --surface2: #1c1f30;
+    --border: #252840;
+    --accent: #5c6bff;
+    --accent2: #38d9a9;
+    --accent3: #ff6b6b;
+    --text: #e8eaf2;
+    --text-muted: #7b80a0;
+    --radius: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 80px;
+    line-height: 1.6;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d0f17 0%, #141835 50%, #0d1428 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(92,107,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(92,107,255,0.15);
+    border: 1px solid rgba(92,107,255,0.3);
+    color: #8a94ff;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 30%, #8a94ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 580px;
+    margin: 0 auto 24px;
+  }
+
+  /* Buttons */
+  .btn {
+    display: inline-block;
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 32px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+  }
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+  .btn-primary:hover { background: #7280ff; transform: translateY(-2px); box-shadow: 0 4px 12px rgba(92,107,255,0.3); }
+
+  /* Navigation */
+  .topics-nav {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .topic-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 20px;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+  .topic-chip:hover { border-color: var(--accent); color: #8a94ff; }
+
+  /* Main layout */
+  main {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 40px 20px;
+  }
+
+  /* Cards */
+  .content-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 32px;
+    margin-bottom: 32px;
+    transition: border-color 0.3s;
+  }
+  .content-card:hover { border-color: rgba(92,107,255,0.3); }
+  
+  .content-card h2 {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    color: #ffffff;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .content-card h2::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 24px;
+    background: var(--accent);
+    border-radius: 4px;
+  }
+
+  .content-section { margin-bottom: 24px; }
+  .content-section h3 {
+    font-size: 16px;
+    color: #8a94ff;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  
+  .example-box {
+    background: rgba(56, 217, 169, 0.08);
+    border-left: 4px solid var(--accent2);
+    padding: 16px 20px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    color: #e8eaf2;
+    font-size: 15px;
+  }
+
+  ul.key-points {
+    list-style: none;
+    margin: 16px 0;
+  }
+  ul.key-points li {
+    position: relative;
+    padding-left: 24px;
+    margin-bottom: 12px;
+  }
+  ul.key-points li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: bold;
+  }
+  
+  .highlight {
+    color: var(--accent2);
+    font-weight: 600;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 24px;
+    background: var(--surface2);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  th, td {
+    padding: 14px 16px;
+    text-align: left;
+    border-bottom: 1px solid var(--border);
+  }
+  th {
+    background: rgba(92,107,255,0.15);
+    color: #8a94ff;
+    font-weight: 600;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  tr:last-child td { border-bottom: none; }
+
+  @media (max-width: 600px) {
+    .content-card { padding: 24px 16px; }
+    .header h1 { font-size: 32px; }
+    table { display: block; overflow-x: auto; white-space: nowrap; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Guia de Estudos Completo</div>
+  <h1>Infraestrutura de TI</h1>
+  <p>Revisão fundamental focada em Redes de Computadores, Arquitetura, Segurança e Computação em Nuvem.</p>
+  <a href="questionario.html" class="btn btn-primary">Iniciar Avaliação ✓</a>
+</div>
+
+<div class="topics-nav">
+  <a href="#redes" class="topic-chip">Redes de Computadores</a>
+  <a href="#arquitetura" class="topic-chip">Arquitetura de Aplicações</a>
+  <a href="#virtualizacao" class="topic-chip">Virtualização</a>
+  <a href="#nuvem" class="topic-chip">Computação em Nuvem</a>
+  <a href="#seguranca" class="topic-chip">Segurança e VPN</a>
+</div>
+
+<main>
+  <section id="redes" class="content-card">
+    <h2>Redes de Computadores</h2>
+    
+    <div class="content-section">
+      <h3>Conceito</h3>
+      <p>A espinha dorsal de toda infraestrutura moderna. É a interconexão de dispositivos que permite o compartilhamento de recursos e a troca de informações seguindo modelos arquitetônicos padronizados (como o Modelo OSI e TCP/IP).</p>
+    </div>
+
+    <div class="example-box">
+      <strong>Exemplo Prático:</strong> Quando você acessa um site, o <strong>DNS</strong> traduz o nome (ex: google.com) para um IP. O navegador faz uma requisição <strong>HTTP/HTTPS</strong>. O tráfego desce pelas camadas até a <strong>Camada Física</strong>, passa por <strong>Switches</strong> (redes locais) e <strong>Roteadores</strong> (internet) até o destino.
+    </div>
+
+    <div class="content-section">
+      <h3>Conceitos-Chave (Camadas e Equipamentos)</h3>
+      <ul class="key-points">
+        <li><span class="highlight">Camada Física:</span> Onde a sequência de bits é convertida em sinais eletromagnéticos (cabos, rádio).</li>
+        <li><span class="highlight">Camada de Enlace:</span> Onde o <strong>Switch</strong> opera aprendendo endereços MAC. A PDU (unidade de dados) desta camada é o <strong>Quadro (Frame)</strong>. Aqui também se configuram as <strong>VLANs</strong> (802.1Q) para segmentação.</li>
+        <li><span class="highlight">Camada de Rede:</span> Onde ocorre o <strong>Roteamento</strong> através de IPs e do <strong>Roteador</strong>. A PDU é o <strong>Pacote</strong>. (Protocolos principais: IPv4, IPv6, ICMP).</li>
+        <li><span class="highlight">Camada de Transporte:</span> Garante a entrega fim-a-fim entre processos nos sistemas hospedeiros (como o <strong>Computador</strong>). A PDU é o <strong>Segmento</strong>.</li>
+      </ul>
+    </div>
+
+    <div class="content-section">
+      <h3>Protocolos e Fundamentos Adicionais</h3>
+      <ul class="key-points">
+        <li><span class="highlight">TCP vs UDP:</span> O TCP garante entrega confiável e controle de fluxo, enquanto o UDP é rápido (sem conexão) e muito usado em aplicações de tempo real.</li>
+        <li><span class="highlight">Roteamento:</span> Pode ser interno usando algoritmos como o de Dijkstra (OSPF) ou protocolos de borda (BGP) para comunicação entre diferentes Sistemas Autônomos (AS).</li>
+        <li><span class="highlight">ICMP:</span> Protocolo de mensagens de controle. É a base de funcionamento de comandos de diagnóstico como o <strong>ping</strong> e o <strong>traceroute</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="arquitetura" class="content-card">
+    <h2>Arquitetura de Aplicações</h2>
+    
+    <div class="content-section">
+      <h3>Conceito</h3>
+      <p>A forma como os sistemas são estruturados para se comunicar na camada de aplicação define o desempenho e a escalabilidade dos serviços web.</p>
+    </div>
+
+    <div class="content-section">
+      <h3>Modelos Principais</h3>
+      <ul class="key-points">
+        <li><span class="highlight">Client-Server (Cliente-Servidor):</span> Múltiplos terminais (clientes) acessam um ponto centralizado (servidor). É a arquitetura dominante para serviços como a <strong>Web (HTTP)</strong>, transferência de arquivos (FTP) e E-mail.</li>
+        <li><span class="highlight">Peer-to-Peer (P2P):</span> Permite a comunicação direta entre os diversos terminais da rede sem a necessidade de um servidor central. Muito utilizado em compartilhamento de arquivos, como o <strong>BitTorrent</strong>.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="virtualizacao" class="content-card">
+    <h2>Virtualização</h2>
+    
+    <div class="content-section">
+      <h3>Conceito</h3>
+      <p>A virtualização é a tecnologia que permite a criação de representações baseadas em software (virtuais) de recursos físicos. Isso maximiza o uso do hardware, reduz custos operacionais e facilita a recuperação de desastres.</p>
+    </div>
+
+    <div class="example-box">
+      <strong>Observação Importante:</strong> A virtualização é a base de funcionamento da Computação em Nuvem. Sem a capacidade de fatiar um servidor físico gigantesco em múltiplas instâncias menores, a Nuvem como conhecemos não existiria.
+    </div>
+
+    <div class="content-section">
+      <h3>Conceitos-Chave</h3>
+      <ul class="key-points">
+        <li><span class="highlight">Hypervisor:</span> O "Monitor de Máquina Virtual". O <strong>Tipo 1 (Bare-Metal)</strong> roda direto no hardware físico (ex: VMware ESXi). O <strong>Tipo 2</strong> roda sobre um sistema operacional comum (ex: VirtualBox).</li>
+        <li><span class="highlight">Máquinas Virtuais (VMs):</span> Virtualizam o hardware completo e requerem um Sistema Operacional convidado (Guest OS) inteiro para cada instância.</li>
+        <li><span class="highlight">Containers (ex: Docker):</span> Mais leves e rápidos que as VMs. Virtualizam a nível de Sistema Operacional, <strong>compartilhando o Kernel</strong> do hospedeiro e isolando apenas as bibliotecas e a aplicação (usando namespaces e cgroups).</li>
+        <li><span class="highlight">Live Migration:</span> Capacidade de mover uma VM em execução de um servidor físico para outro com zero interrupção.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="nuvem" class="content-card">
+    <h2>Computação em Nuvem (Cloud Computing)</h2>
+    
+    <div class="content-section">
+      <h3>Conceito</h3>
+      <p>A entrega de recursos de TI sob demanda (computação, armazenamento, banco de dados) via Internet, com precificação baseada no uso (pay-as-you-go). Elimina a necessidade de manter data centers físicos on-premise.</p>
+    </div>
+
+    <div class="example-box">
+      <strong>Modelos de Implantação:</strong> A nuvem <strong>Pública</strong> compartilha recursos (AWS, Azure). A <strong>Privada</strong> é dedicada a uma única organização. A <strong>Híbrida</strong> interliga a rede local segura com o poder de escala da nuvem pública (geralmente via VPN ou links dedicados).
+    </div>
+
+    <div class="content-section">
+      <h3>Modelos de Serviço</h3>
+      <table>
+        <tr>
+          <th>Modelo</th>
+          <th>O que é gerenciado pelo Cliente?</th>
+          <th>Exemplo</th>
+        </tr>
+        <tr>
+          <td><span class="highlight">IaaS</span> (Infraestrutura)</td>
+          <td>Aplicações, Dados, SO, Middleware. (O provedor cuida só do hardware e rede física).</td>
+          <td>Amazon EC2, Azure VMs</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">PaaS</span> (Plataforma)</td>
+          <td>Apenas Aplicações e Dados. (Ideal para desenvolvedores focarem em código).</td>
+          <td>Google App Engine, Heroku</td>
+        </tr>
+        <tr>
+          <td><span class="highlight">SaaS</span> (Software)</td>
+          <td>Apenas o uso. (Tudo é gerenciado pelo provedor e entregue pronto no navegador).</td>
+          <td>Microsoft 365, Gmail</td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="content-section" style="margin-top: 24px;">
+      <h3>Conceitos-Chave</h3>
+      <ul class="key-points">
+        <li><span class="highlight">Escalabilidade Elástica:</span> Capacidade de aumentar (scale up/out) ou diminuir recursos em tempo real de acordo com a demanda de tráfego.</li>
+        <li><span class="highlight">Alta Disponibilidade (HA):</span> Arquitetura projetada para permanecer operacional continuamente, utilizando múltiplas Zonas de Disponibilidade (datacenters separados fisicamente).</li>
+        <li><span class="highlight">Orquestração:</span> Ferramentas como o <strong>Kubernetes</strong> são usadas para gerenciar e escalar milhares de containers de forma automatizada em ambientes de microsserviços.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="seguranca" class="content-card">
+    <h2>Segurança e VPN</h2>
+    
+    <div class="content-section">
+      <h3>Conceito</h3>
+      <p>Em ambientes corporativos e de sistemas web, proteger os perímetros da rede e garantir a criptografia dos dados em trânsito são os pilares para uma operação confiável e segura.</p>
+    </div>
+
+    <div class="content-section">
+      <h3>Conceitos-Chave</h3>
+      <ul class="key-points">
+        <li><span class="highlight">Firewall Stateful (Inspeção de Estados):</span> Diferente de filtros simples, ele monitora ativamente as conexões nas camadas de rede (L3) e transporte (L4), entendendo o estado e o fluxo da comunicação para aplicar políticas rigorosas.</li>
+        <li><span class="highlight">VPN Site-to-Site:</span> Uma Rede Privada Virtual que estabelece um túnel criptografado pela Internet. É utilizada para conectar filiais geograficamente distantes como se estivessem dentro da mesma rede local (LAN).</li>
+        <li><span class="highlight">Protocolo TLS:</span> Sucessor do SSL, é essencial para o HTTPS moderno. Ele garante tanto a confidencialidade (através de criptografia) quanto a integridade dos dados trafegados entre o cliente e o servidor da aplicação.</li>
+        <li><span class="highlight">Ataques DoS / DDoS:</span> (Distributed Denial of Service). Ataques cujo objetivo primário não é roubar dados, mas sim sobrecarregar um servidor ou link de rede com tráfego massivo, tornando a infraestrutura indisponível para usuários legítimos.</li>
+      </ul>
+    </div>
+  </section>
+
+</main>
+
+</body>
+</html>

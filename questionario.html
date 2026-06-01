@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Avaliação — Infraestrutura de TI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap');
+
+  :root {
+    --bg: #0d0f17;
+    --surface: #141624;
+    --surface2: #1c1f30;
+    --border: #252840;
+    --accent: #5c6bff;
+    --accent2: #38d9a9;
+    --accent3: #ff6b6b;
+    --text: #e8eaf2;
+    --text-muted: #7b80a0;
+    --correct: #38d9a9;
+    --wrong: #ff6b6b;
+    --radius: 14px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    padding: 0 0 100px;
+  }
+
+  /* Header */
+  .header {
+    background: linear-gradient(135deg, #0d0f17 0%, #141835 50%, #0d1428 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 48px 24px 40px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    top: -80px; left: 50%; transform: translateX(-50%);
+    width: 600px; height: 300px;
+    background: radial-gradient(ellipse, rgba(92,107,255,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+  .header-badge {
+    display: inline-block;
+    background: rgba(92,107,255,0.15);
+    border: 1px solid rgba(92,107,255,0.3);
+    color: #8a94ff;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+  .header h1 {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(28px, 5vw, 52px);
+    font-weight: 800;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 30%, #8a94ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+  }
+  .header p {
+    color: var(--text-muted);
+    font-size: 16px;
+    max-width: 580px;
+    margin: 0 auto;
+    line-height: 1.6;
+  }
+  .stats-bar {
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+    margin-top: 32px;
+    flex-wrap: wrap;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--accent);
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-top: 2px;
+  }
+
+  /* Topics nav */
+  .topics-nav {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+    padding: 20px 24px;
+    flex-wrap: wrap;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+  }
+  .topic-chip {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 12px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    cursor: default;
+    transition: all 0.2s;
+  }
+  .topic-chip:hover { border-color: var(--accent); color: var(--text); }
+
+  /* Main layout */
+  main {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 32px 20px;
+  }
+
+  /* Question card */
+  .question-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 28px;
+    margin-bottom: 24px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    position: relative;
+  }
+  .question-card.answered-correct { border-color: var(--correct); }
+  .question-card.answered-wrong { border-color: var(--wrong); }
+  .question-card:hover { border-color: rgba(92,107,255,0.4); box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+
+  .question-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+  .q-number {
+    flex-shrink: 0;
+    width: 38px; height: 38px;
+    background: rgba(92,107,255,0.15);
+    border: 1px solid rgba(92,107,255,0.3);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Syne', sans-serif;
+    font-size: 14px;
+    font-weight: 700;
+    color: #8a94ff;
+  }
+  .q-topic {
+    font-size: 11px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    display: inline-block;
+    background: var(--surface2);
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .q-text {
+    font-size: 16px;
+    line-height: 1.65;
+    color: var(--text);
+    font-weight: 400;
+    white-space: pre-line;
+  }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 8px; }
+  .option {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 14px 16px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .option:hover {
+    background: rgba(92,107,255,0.08);
+    border-color: rgba(92,107,255,0.4);
+  }
+  .option input[type="radio"] {
+    appearance: none;
+    width: 18px; height: 18px;
+    border: 2px solid var(--border);
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 2px;
+    cursor: pointer;
+    transition: all 0.18s;
+    position: relative;
+  }
+  .option input[type="radio"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(92,107,255,0.2);
+  }
+  .option input[type="radio"]:checked::after {
+    content: '';
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    width: 6px; height: 6px;
+    background: white;
+    border-radius: 50%;
+  }
+  .option label {
+    font-size: 15px;
+    line-height: 1.55;
+    color: var(--text);
+    cursor: pointer;
+    flex: 1;
+  }
+
+  /* Post-grading states */
+  .option.selected-option { border-color: var(--accent); background: rgba(92,107,255,0.05); }
+  .option.correct-option {
+    background: rgba(56,217,169,0.1);
+    border-color: var(--correct);
+  }
+  .option.correct-option label { color: var(--correct); font-weight: 500; }
+  .option.wrong-option {
+    background: rgba(255,107,107,0.1);
+    border-color: var(--wrong);
+  }
+  .option.wrong-option label { color: var(--wrong); }
+  .option.disabled { pointer-events: none; }
+
+  /* Feedback */
+  .feedback {
+    display: none;
+    margin-top: 16px;
+    padding: 14px 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    line-height: 1.5;
+  }
+  .feedback.correct {
+    background: rgba(56,217,169,0.1);
+    border: 1px solid rgba(56,217,169,0.3);
+    color: var(--correct);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .feedback.wrong {
+    background: rgba(255,107,107,0.1);
+    border: 1px solid rgba(255,107,107,0.3);
+    color: #ff9999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .feedback-status {
+    display: flex;
+    gap: 8px;
+    align-items: flex-start;
+  }
+  .feedback-justification {
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--text);
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255,255,255,0.15);
+  }
+
+  /* Action bar */
+  .action-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    background: rgba(13,15,23,0.95);
+    backdrop-filter: blur(12px);
+    border-top: 1px solid var(--border);
+    padding: 16px 24px;
+    display: flex;
+    justify-content: center;
+    gap: 16px;
+    flex-wrap: wrap;
+    z-index: 50;
+  }
+  .btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 15px;
+    font-weight: 700;
+    padding: 13px 32px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.02em;
+    text-decoration: none;
+    display: inline-block;
+  }
+  .btn-primary { background: var(--accent); color: white; }
+  .btn-primary:hover { background: #7280ff; transform: translateY(-1px); }
+  .btn-secondary { background: var(--surface2); color: var(--text); border: 1px solid var(--border); }
+  .btn-secondary:hover { border-color: var(--accent); color: #8a94ff; }
+
+  /* Score modal */
+  .score-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(8px);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+  }
+  .score-overlay.active { display: flex; }
+  .score-modal {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 48px 40px;
+    text-align: center;
+    max-width: 500px;
+    width: 100%;
+    animation: popIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  @keyframes popIn {
+    from { transform: scale(0.8); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+  }
+  .score-emoji { font-size: 64px; margin-bottom: 16px; }
+  .score-title {
+    font-family: 'Syne', sans-serif;
+    font-size: 28px;
+    font-weight: 800;
+    margin-bottom: 8px;
+  }
+  .score-number {
+    font-family: 'Syne', sans-serif;
+    font-size: 64px;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    line-height: 1;
+    margin: 16px 0;
+  }
+  .score-breakdown {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin: 20px 0 28px;
+  }
+  .score-item { text-align: center; }
+  .score-item-num { font-family: 'Syne', sans-serif; font-size: 24px; font-weight: 700; }
+  .score-item-num.c { color: var(--correct); }
+  .score-item-num.w { color: var(--wrong); }
+  .score-item-num.s { color: var(--text-muted); }
+  .score-item-label { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+  .score-message { color: var(--text-muted); font-size: 15px; line-height: 1.6; margin-bottom: 24px; }
+  .progress-ring {
+    margin: 0 auto 20px;
+    position: relative;
+    width: 120px; height: 120px;
+  }
+  .progress-ring svg { transform: rotate(-90deg); }
+  .progress-ring circle { transition: stroke-dashoffset 1s ease; }
+  .progress-ring .label {
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--text);
+  }
+
+  @media (max-width: 600px) {
+    .question-card { padding: 20px 16px; }
+    .score-modal { padding: 32px 24px; }
+    .score-number { font-size: 48px; }
+    .action-bar { padding: 12px; gap: 8px; }
+    .btn { padding: 10px 16px; font-size: 13px; width: 100%; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-badge">Redes, Nuvem & Virtualização</div>
+  <h1>Banco de Questões</h1>
+  <p>Questionário validado e focado exclusivamente nos pilares de Infraestrutura de TI</p>
+  <div class="stats-bar">
+    <div class="stat"><div class="stat-num" id="totalQuestionsDisplay">50</div><div class="stat-label">Questões</div></div>
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Tópicos Foco</div></div>
+    <div class="stat"><div class="stat-num">1pt</div><div class="stat-label">Por acerto</div></div>
+  </div>
+</div>
+
+<div class="topics-nav">
+  <span class="topic-chip">Redes: Camadas & Protocolos</span>
+  <span class="topic-chip">Redes: IP & Roteamento</span>
+  <span class="topic-chip">Redes: VLANs & Switching</span>
+  <span class="topic-chip">Virtualização</span>
+  <span class="topic-chip">Computação em Nuvem</span>
+  <span class="topic-chip">Segurança e VPN</span>
+</div>
+
+<main id="quiz-container"></main>
+
+<div class="action-bar">
+  <a href="index.html" class="btn btn-secondary">← Voltar ao Guia</a>
+  <button class="btn btn-secondary" onclick="resetQuiz()">↺ Reiniciar</button>
+  <button class="btn btn-primary" onclick="gradeQuiz()">Corrigir ✓</button>
+</div>
+
+<div class="score-overlay" id="scoreOverlay">
+  <div class="score-modal">
+    <div class="score-emoji" id="scoreEmoji">🎉</div>
+    <div class="score-title">Resultado Final</div>
+    <div class="progress-ring">
+      <svg width="120" height="120">
+        <circle cx="60" cy="60" r="50" fill="none" stroke="#252840" stroke-width="8"/>
+        <circle id="progressCircle" cx="60" cy="60" r="50" fill="none" stroke="url(#grad)" stroke-width="8"
+          stroke-dasharray="314" stroke-dashoffset="314" stroke-linecap="round"/>
+        <defs>
+          <linearGradient id="grad" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#5c6bff"/>
+            <stop offset="100%" style="stop-color:#38d9a9"/>
+          </linearGradient>
+        </defs>
+      </svg>
+      <div class="label" id="scorePercent">0%</div>
+    </div>
+    <div class="score-number" id="scoreNumber">0 / 50</div>
+    <div class="score-breakdown">
+      <div class="score-item"><div class="score-item-num c" id="correctCount">0</div><div class="score-item-label">Corretas</div></div>
+      <div class="score-item"><div class="score-item-num w" id="wrongCount">0</div><div class="score-item-label">Erradas</div></div>
+      <div class="score-item"><div class="score-item-num s" id="skipCount">0</div><div class="score-item-label">Omitidas</div></div>
+    </div>
+    <div class="score-message" id="scoreMessage"></div>
+    <button class="btn btn-primary" onclick="document.getElementById('scoreOverlay').classList.remove('active'); window.scrollTo(0,0);">Ver Gabarito ↓</button>
+  </div>
+</div>
+
+<script>
+const questions = [
+  // ─── REDES: CAMADAS E PROTOCOLOS ───
+  {
+    topic: "Redes: Camadas",
+    text: "No modelo de Internet de 5 camadas, qual é a ordem correta das camadas, da mais alta para a mais baixa?",
+    options: [
+      "Aplicação → Transporte → Rede → Enlace → Física",
+      "Aplicação → Sessão → Transporte → Rede → Física",
+      "Apresentação → Aplicação → Transporte → Rede → Enlace",
+      "Transporte → Aplicação → Rede → Enlace → Física",
+      "Aplicação → Transporte → Internet → Acesso → Física"
+    ],
+    correct: 0,
+    justification: "O modelo TCP/IP (ou Internet) de 5 camadas segue do nível mais próximo ao usuário (Aplicação) até a transmissão no meio (Física), passando por Transporte, Rede e Enlace."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Qual é o nome dado à unidade de dados do protocolo (PDU) na camada de enlace?",
+    options: ["Pacote", "Segmento", "Datagrama", "Quadro (Frame)", "Mensagem"],
+    correct: 3,
+    justification: "Na camada de Enlace, os dados encapsulados que circulam recebem um cabeçalho e um trailer (como o endereço MAC), formando a estrutura que chamamos de Quadro ou Frame."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "A encapsulação de dados ocorre quando uma mensagem percorre as camadas de cima para baixo. Ao passar pela camada de transporte, qual PDU é formada?",
+    options: ["Quadro", "Pacote", "Segmento", "Datagrama", "Bit"],
+    correct: 2,
+    justification: "A camada de Transporte pega a mensagem da camada de Aplicação e a divide. No caso do TCP, essa unidade é chamada estritamente de Segmento (e no caso do UDP, muitas vezes referida como datagrama, mas Segmento é a resposta clássica)."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Em que camada do modelo de rede acontece primariamente o roteamento?",
+    options: ["Transporte", "Aplicação", "Física", "Rede", "Enlace"],
+    correct: 3,
+    justification: "A camada de Rede (Network Layer) é responsável pelo roteamento lógico dos pacotes, determinando o melhor caminho desde a origem até o destino usando endereços IP."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Sobre o protocolo TCP da camada de transporte, pode-se afirmar que se trata de um protocolo:",
+    options: [
+      "Não orientado a conexão e não confiável",
+      "Orientado a conexão e não confiável",
+      "Orientado a conexão e confiável",
+      "Não orientado a conexão e confiável",
+      "Voltado estritamente para aplicações em tempo real"
+    ],
+    correct: 2,
+    justification: "O TCP (Transmission Control Protocol) garante a entrega e a ordem dos pacotes através de confirmações (ACKs) e exige um estabelecimento de sessão prévio (3-way handshake), logo é orientado a conexão e confiável."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "O UDP (User Datagram Protocol) é um protocolo da camada de transporte. Qual das opções abaixo corresponde a uma característica prática de sua aplicação?",
+    options: [
+      "Garante entrega ordenada sem perdas.",
+      "Possui controle de congestionamento nativo e eficiente.",
+      "Apresenta alto overhead de cabeçalho.",
+      "É amplamente utilizado para aplicações de tempo real (como VoIP e Streaming).",
+      "Utiliza um Handshake de 3 vias para iniciar a comunicação."
+    ],
+    correct: 3,
+    justification: "Por não realizar garantias de entrega nem ordenação, o UDP possui menos overhead (mais rápido), sendo a escolha ideal para áudio e vídeo em tempo real onde a rapidez importa mais do que uma eventual perda de pacote."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Um cliente recém-conectado a uma rede precisa descobrir um IP para navegar. Ele envia uma mensagem em Broadcast solicitando configurações (como IP e Gateway). Qual protocolo responde a esse processo?",
+    options: ["ICMP", "DHCP", "RARP", "BGP", "SMTP"],
+    correct: 1,
+    justification: "O DHCP (Dynamic Host Configuration Protocol) é o serviço de rede responsável por fornecer dinamicamente endereços IP e demais parâmetros de rede para os dispositivos clientes."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "O HTTP e o HTTPS são protocolos pertencentes a qual camada do modelo Internet?",
+    options: ["Enlace", "Apresentação", "Sessão", "Rede", "Aplicação"],
+    correct: 4,
+    justification: "O HTTP e o HTTPS operam no nível mais alto de abstração de rede, provendo a interface e transferência direta de dados estruturados para softwares como os navegadores, configurando a camada de Aplicação."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Quando um host realiza uma consulta DNS para resolver um nome de domínio, qual protocolo de transporte é tipicamente utilizado nas consultas padrão?",
+    options: ["TCP", "UDP", "ICMP", "ARP", "SMTP"],
+    correct: 1,
+    justification: "Para consultas curtas e rápidas onde se deseja minimizar atrasos, o DNS utiliza primariamente o UDP na porta 53."
+  },
+
+  // ─── QUESTÕES ADICIONAIS DO ARQUIVO MD ───
+  {
+    topic: "Redes: Camadas",
+    text: "Associe a camada com o respectivo protocolo:",
+    options: [
+      "Aplicação -> SMTP; Transporte -> UDP; Rede -> IP; Enlace -> Ethernet",
+      "Aplicação -> IP; Transporte -> TCP; Rede -> SMTP; Enlace -> Ethernet",
+      "Aplicação -> Ethernet; Transporte -> IP; Rede -> UDP; Enlace -> SMTP",
+      "Aplicação -> UDP; Transporte -> Ethernet; Rede -> IP; Enlace -> SMTP",
+      "Nenhuma das alternativas"
+    ],
+    correct: 0,
+    justification: "SMTP envia e-mails (Aplicação). UDP carrega fluxos de dados (Transporte). IP roteia lógicamente os pacotes (Rede). Ethernet define os padrões para quadros locais em cabos de rede (Enlace)."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Os meios de transmissão pertencem a que camada do modelo Internet de 5 camadas?",
+    options: ["Enlace", "Rede", "Aplicação", "Transporte", "Física"],
+    correct: 4,
+    justification: "Cabos de cobre, fibras ópticas e sinais de rádio são os meios de transmissão materiais que formam a camada Física."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Uma sequência de bits é convertida em sinal eletromagnético na camada...",
+    options: ["Transporte", "Aplicação", "Enlace", "Rede", "Física"],
+    correct: 4,
+    justification: "A modulação de bits digitais (0 e 1) em sinais analógicos eletromagnéticos, elétricos ou ópticos ocorre exclusivamente na base do modelo: a camada Física."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Os serviços de entrega de mensagem entre processos é de responsabilidade da camada:",
+    options: ["Rede", "Enlace", "Física", "Aplicação", "Transporte"],
+    correct: 4,
+    justification: "A camada de Transporte utiliza mecanismos como números de 'Porta' lógicos para direcionar a entrega (multiplexação/demultiplexação) de forma isolada entre múltiplos processos correndo no mesmo dispositivo."
+  },
+  {
+    topic: "Redes: Roteamento",
+    text: "Analise as sentenças seguintes.\nI. Se um host no Brasil quer se comunicar com um host no Japão o campo TTL do pacote IP será modificado da origem até o destino.\nII. Se considerarmos toda a rede sob administração de uma grande operadora nacional de telecomunicações teremos o exemplo de um 'sistema autônomo' (autonomous system).\nIII. Podemos utilizar um protocolo de roteamento de borda, como o BGP, por exemplo, na rede interna de uma indústria nacional de grande porte.\nEstá(ão) correta(s) a(s) alternativa(s):",
+    options: ["I e II.", "I apenas.", "I e III.", "II e III.", "I, II e III."],
+    correct: 4,
+    justification: "Todas as afirmativas estão corretas: O TTL sempre decrementa a cada salto (I), grandes redes gerenciadas por uma entidade recebem o status de Autonomous System (II), e o BGP pode ser usado internamente através de sua variação iBGP em redes muito massivas (III)."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Os comandos “ping” e “traceroute” (ou “tracert”) utilizam o protocolo:",
+    options: ["ARP", "IGMP", "DHCP", "RIP", "ICMP"],
+    correct: 4,
+    justification: "Estas ferramentas fundamentais de diagnóstico de rede utilizam o envio de mensagens do tipo Echo Request e a leitura de respostas do Internet Control Message Protocol (ICMP)."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Qual o nome da PDU da camada de rede?",
+    options: ["quadro", "mensagem", "bit", "segmento", "pacote"],
+    correct: 4,
+    justification: "Ao atingir a camada de Rede (L3), as informações encapsuladas e prontas para roteamento lógico são chamadas de Pacote (ou Datagrama IP)."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "Qual camada do modelo Internet é a responsável por garantir a entrega dos dados fim-a-fim de modo confiável?",
+    options: ["Rede", "Sessão", "Aplicação", "Apresentação", "Transporte"],
+    correct: 4,
+    justification: "No modelo TCP/IP (Internet), é a camada de Transporte a responsável por estabelecer verificações de segurança lógica ponta a ponta na comunicação, especialmente ao utilizar o TCP."
+  },
+  {
+    topic: "Redes: Camadas",
+    text: "O equipamento que atua na camada 4 é o:",
+    options: ["switch", "modem", "hub", "roteador", "computador"],
+    correct: 4,
+    justification: "Hubs operam na L1. Switches na L2. Roteadores na L3. Equipamentos que abrem sessões para processos e chegam à camada de transporte (L4) são os hosts finais, como o seu computador pessoal."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Analise as sentenças seguintes sobre os protocolos TCP e UDP:\nI. É possível realizar o controle de fluxo tanto no protocolo TCP como no UDP.\nII. É possível controlar segmentos faltantes, ou entregues fora de ordem, tanto no protocolo TCP como no UDP.\nPode-se afirmar que:",
+    options: [
+      "As duas sentenças estão completamente erradas.",
+      "As duas sentenças são verdadeiras apenas para o protocolo UDP.",
+      "A primeira sentença é verdadeira para o protocolo TCP enquanto a segunda é verdadeira para o protocolo UDP.",
+      "As duas sentenças estão completamente certas.",
+      "As duas sentenças são verdadeiras apenas para o protocolo TCP."
+    ],
+    correct: 4,
+    justification: "O UDP é conhecido por ser 'best-effort', ignorando validação. As afirmações descrevem exclusivamente as qualidades do TCP, que garante integridade, ordenação e contenção (controle de fluxo)."
+  },
+  {
+    topic: "Redes: Arquitetura",
+    text: "A maior parte das aplicações de rede, tais como a web, o correio eletrônico (e-mail) e a transferência de arquivos, funcionam em uma arquitetura onde múltiplos terminais acessam um ponto central, chamada de arquitetura:",
+    options: ["Central-point.", "Serverless.", "Peer-to-peer.", "SOA - Service-Oriented Architecture.", "Client-server."],
+    correct: 4,
+    justification: "O modelo Cliente-Servidor (Client-server) pressupõe que um provedor de recursos ou serviços fica escutando em uma máquina central (Servidor) e atende de forma unificada as requisições ativas das pontas (Clientes)."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "A web, ou grande teia mundial, é um serviço criado por Tim Berners-Lee que trouxe novas possibilidades para a Internet. Esse serviço é baseado no protocolo:",
+    options: ["FTP", "WWW", "DNS", "HTML", "HTTP"],
+    correct: 4,
+    justification: "A Web foi arquitetada especificamente para fluir através do Hypertext Transfer Protocol (HTTP), o canal pelo qual navegadores carregam páginas e transferem documentos de hipertexto."
+  },
+  {
+    topic: "Redes: Protocolos",
+    text: "Qual das alternativas abaixo é um protocolo que atua na camada de aplicação?",
+    options: ["IP", "ARP", "ATM", "ICMP", "FTP"],
+    correct: 4,
+    justification: "O IP e o ICMP operam na Rede; o ARP atua aliando Rede e Enlace; o ATM abrange a camada base. O FTP (File Transfer Protocol) interage ativamente com o fluxo de usuário para gestão de arquivos (Aplicação)."
+  },
+  {
+    topic: "Redes: Arquitetura",
+    text: "Aplicações de compartilhamento de arquivos como o BitTorrent e, eventualmente, comunicação instantânea, funcionam em uma arquitetura que permite a comunicação direta entre os diversos terminais, chamada de:",
+    options: ["Point-to-point.", "Direct communication.", "Client-server.", "Serverless.", "Peer-to-peer."],
+    correct: 4,
+    justification: "A arquitetura Peer-to-peer (Ponto a ponto) dilui a figura do 'Servidor', permitindo que cada dispositivo (peer) conectado atue também como consumidor e provedor de dados para seus pares."
+  },
+
+  // ─── REDES: IP E ROTEAMENTO ───
+  {
+    topic: "Redes: IP",
+    text: "Um endereço IPv4 é composto por quantos bits?",
+    options: ["16 bits", "32 bits", "48 bits", "64 bits", "128 bits"],
+    correct: 1,
+    justification: "O protocolo IPv4 é composto por 4 blocos de 8 bits (octetos), totalizando uma arquitetura fixa de 32 bits."
+  },
+  {
+    topic: "Redes: IP",
+    text: "Qual dos seguintes endereços IPv4 pertence a um bloco reservado para redes privadas, não sendo roteável na Internet pública?",
+    options: ["8.8.8.8", "169.254.1.1", "200.23.16.5", "172.16.0.1", "127.0.0.1"],
+    correct: 3,
+    justification: "Conforme a RFC 1918, a internet utiliza as faixas 10.0.0.0, 172.16.0.0–172.31.255.255 e 192.168.0.0 para alocação de uso privado nas LANs, isoladas da malha global pública."
+  },
+  {
+    topic: "Redes: IP",
+    text: "O NAT (Network Address Translation) é uma tecnologia cuja finalidade principal é:",
+    options: [
+      "Converter endereços MAC em endereços IP",
+      "Permitir que múltiplos hosts de uma rede privada compartilhem um único endereço IP público",
+      "Rotear pacotes entre diferentes sistemas autônomos na Internet",
+      "Criptografar o tráfego entre dois hosts",
+      "Atribuir endereços IP fixos a hosts específicos"
+    ],
+    correct: 1,
+    justification: "O NAT atua na borda da rede mascarando os endereços privados de diversos computadores locais em um único IP público válido durante as conexões externas para poupar o estoque do IPv4."
+  },
+  {
+    topic: "Redes: IP",
+    text: "Qual é a principal motivação para a transição global para o protocolo IPv6?",
+    options: [
+      "Diminuir o processamento na camada de aplicação.",
+      "Aumentar drasticamente o espaço de endereçamento (para 128 bits) devido ao esgotamento matemático do IPv4.",
+      "Substituir o Wi-Fi em dispositivos móveis.",
+      "Eliminação do protocolo ARP nas redes locais.",
+      "Melhoria exclusiva na velocidade dos enlaces físicos."
+    ],
+    correct: 1,
+    justification: "Com a popularização extrema da Internet e de dispositivos (IoT), os 4,3 bilhões de endereços possíveis do IPv4 acabaram, forçando a implementação do IPv6 que entrega endereços em tamanho de 128 bits."
+  },
+  {
+    topic: "Redes: Roteamento",
+    text: "O protocolo BGP (Border Gateway Protocol) é classificado como um protocolo de roteamento de:",
+    options: [
+      "Estado de enlace (Link-State) interno a um AS",
+      "Vetor de distância para uso exclusivo em redes domésticas",
+      "Borda (Exterior Gateway Protocol), utilizado para roteamento global entre Sistemas Autônomos",
+      "Multicast em redes locais corporativas",
+      "Camada 2 para spanning tree"
+    ],
+    correct: 2,
+    justification: "O BGP atua em grande escala, sendo de fato o 'protocolo da Internet', encarregado de trocar caminhos (path vector) e rotas entre gigantescas redes corporativas e as provedoras."
+  },
+  {
+    topic: "Redes: Roteamento",
+    text: "O protocolo OSPF (Open Shortest Path First) utiliza qual algoritmo base para calcular as melhores rotas internas na rede?",
+    options: [
+      "Algoritmo de Bellman-Ford",
+      "Algoritmo de Dijkstra (estado de enlace)",
+      "Algoritmo Round-Robin",
+      "Tabela MAC Dinâmica",
+      "Algoritmo de Huffman"
+    ],
+    correct: 1,
+    justification: "O OSPF é o protocolo de Link-State mais proeminente e ele se baseia no algoritmo de Dijkstra para calcular rigorosamente o caminho mais curto até os destinos partindo de uma árvore matemática que reflete a rede."
+  },
+  {
+    topic: "Redes: Roteamento",
+    text: "Quando o campo TTL (Time to Live) de um pacote IP chega a zero (0) em um roteador intermediário, o que ocorre?",
+    options: [
+      "Encaminhar o pacote ao próximo salto com prioridade máxima",
+      "Retransmitir o pacote de volta à origem",
+      "O pacote é descartado e uma mensagem ICMP de erro 'Time Exceeded' é enviada ao host de origem",
+      "O pacote é descartado silenciosamente sem notificação",
+      "Incrementar o TTL em 1 e continuar o encaminhamento"
+    ],
+    correct: 2,
+    justification: "O TTL impede que um pacote fique trafegando na Internet em looping eterno. Ao zera-lo (após subtrações por cada roteador que passa), o pacote deve ser imediatamente expurgado com notificação enviada à base."
+  },
+  {
+    topic: "Redes: Infraestrutura",
+    text: "O Address Resolution Protocol (ARP) tem a responsabilidade central de:",
+    options: [
+      "Garantir a integridade criptográfica da comunicação.",
+      "Mapear/Descobrir o endereço físico (MAC) a partir do endereço lógico (IP) dentro de uma mesma rede local.",
+      "Encaminhar pacotes entre roteadores de borda de países distintos.",
+      "Determinar a máscara de sub-rede mais adequada para um bloco CIDR.",
+      "Monitorar se uma porta TCP está ativa."
+    ],
+    correct: 1,
+    justification: "Antes de um host disparar a mensagem em uma rede local, ele possui apenas o IP de destino. O ARP lança uma busca em broadcast perguntando \"Quem é dono deste IP?\" a fim de obter e salvar o endereço MAC em cache."
+  },
+
+  // ─── REDES: VLANs E SWITCHING ───
+  {
+    topic: "Redes: Switching",
+    text: "Qual é a função básica de um comutador (switch) da camada de enlace de dados?",
+    options: [
+      "Distribuir o pacote em broadcast para todas as portas sempre.",
+      "Roteamento de caminhos de longa distância usando o IP.",
+      "Aprender os endereços MAC das estações e encaminhar os quadros de forma isolada apenas para a porta de destino adequada.",
+      "Modulação analógica de canais de voz.",
+      "Alocar endereços IPs dinâmicos."
+    ],
+    correct: 2,
+    justification: "Ao invés de replicar dados como um Hub, o Switch utiliza uma Tabela MAC que ele mesmo alimenta para conduzir o pacote através de circuitos lógicos diretos (unicast) a apenas a porta destinatária, impedindo colisões de tráfego."
+  },
+  {
+    topic: "Redes: VLANs",
+    text: "Qual é a principal vantagem de implementar VLANs (Virtual Local Area Networks) em uma rede corporativa?",
+    options: [
+      "Aumento da largura de banda total do provedor de internet",
+      "Segmentação lógica do tráfego de rede em uma mesma infraestrutura física, separando domínios de broadcast para melhorar segurança e desempenho",
+      "Eliminação completa da necessidade de roteadores na rede",
+      "Redução drástica do número de portas em um switch",
+      "Substituição do cabeamento de cobre por fibra óptica"
+    ],
+    correct: 1,
+    justification: "VLANs quebram o alcance excessivo de broadcast, isolam departamentos e gerenciam com facilidade via software quais computadores devem enxergar um aos outros sem precisar redesenhar cabos no prédio inteiro."
+  },
+  {
+    topic: "Redes: VLANs",
+    text: "Nas estruturas de VLANs, qual protocolo adiciona uma marcação (tag) no cabeçalho do quadro Ethernet para identificar a VLAN ao repassar dados por portas tronco (trunk ports)?",
+    options: ["802.1Q", "IPv6", "802.11", "ICMP", "CSMA/CD"],
+    correct: 0,
+    justification: "A norma IEEE 802.1Q embute um cabeçalho de 4 bytes entre os dados dos endereços do Frame Ethernet indicando numericamente a qual VLAN aquele dado específico pertence durante sua travessia para outros Switches."
+  },
+  {
+    topic: "Redes: VLANs",
+    text: "Em uma rede local configurada com VLANs, o tráfego entre duas VLANs diferentes (ex: VLAN Vendas e VLAN RH) requer obrigatoriamente:",
+    options: [
+      "Um hub de alta velocidade",
+      "Um Roteador ou um Switch Layer 3 (camada de rede) para realizar o inter-VLAN routing",
+      "Apenas configuração de porta no switch Layer 2",
+      "Bridges dedicadas para cada máquina",
+      "Um servidor de domínio Windows"
+    ],
+    correct: 1,
+    justification: "Apesar de criadas via Switch (L2), VLANs diferentes figuram como Sub-redes IP distintas que não se comunicam diretamente por quadros. Somente a intermediação baseada em roteamento IP (L3) permite sua ligação."
+  },
+
+  // ─── VIRTUALIZAÇÃO ───
+  {
+    topic: "Virtualização",
+    text: "O Hypervisor (Monitor de Máquina Virtual) tem como função principal em um ambiente de Virtualização:",
+    options: [
+      "Gerenciar a interface Web gráfica do painel da nuvem pública.",
+      "Distribuir o processamento de containers sem isolamento real.",
+      "Atuar como uma camada de software que abstrai os recursos físicos do Host para permitir a criação, isolamento e execução paralela de múltiplos Sistemas Operacionais Convidados (VMs).",
+      "Acelerar o roteamento intra-AS na Internet via OSPF.",
+      "Traduzir nomes DNS privados em IPs virtuais locais."
+    ],
+    correct: 2,
+    justification: "O Hypervisor é o núcleo tecnológico da Virtualização por VMs. Ele intercepta as chamadas de Sistema Operacional dezenas de vezes mais rápido, fatiando os recursos em hardware simulado para cada Sistema Operacional cliente alojado no Host."
+  },
+  {
+    topic: "Virtualização",
+    text: "Qual é a diferença fundamental entre um hipervisor do Tipo 1 (Bare-Metal) e um hipervisor do Tipo 2?",
+    options: [
+      "Tipo 1 roda sobre um Sistema Operacional hospedeiro (como o Windows); Tipo 2 roda nativamente direto no hardware.",
+      "Tipo 1 roda diretamente sobre o hardware físico (sem SO intermediário); Tipo 2 exige um Sistema Operacional hospedeiro pré-instalado.",
+      "Tipo 1 só suporta virtualização de redes; Tipo 2 virtualiza servidores.",
+      "Não há diferença técnica, apenas nomenclatura de mercado.",
+      "Tipo 1 não permite a execução de múltiplas VMs simultaneamente."
+    ],
+    correct: 1,
+    justification: "Datacenters utilizam Hypervisors Tipo 1 (como o VMware ESXi ou Hyper-V Server) pois eles são seu próprio ecossistema bare-metal acoplado diretamente às peças. Hypervisors Tipo 2 são mais para testes e simulação, rodando dentro do seu Windows/Linux/macOS diário (como o VirtualBox)."
+  },
+  {
+    topic: "Virtualização",
+    text: "Sobre as diferenças cruciais entre Virtualização tradicional por Máquinas Virtuais (VMs) e a conteinerização (ex: Docker), é correto afirmar:",
+    options: [
+      "Containers requerem a instalação de um SO convidado inteiro por aplicação, sendo mais pesados que VMs.",
+      "VMs isolam software abstraindo o sistema operacional subjacente para compartilharem o mesmo Kernel.",
+      "VMs dependem de um Hypervisor e executam SOs completos independentes. Containers virtualizam a nível de Sistema Operacional, sendo muito mais leves pois compartilham o Kernel do Host.",
+      "Containers são a base do modelo SaaS, enquanto as VMs não podem ser usadas em Computação em Nuvem.",
+      "A tecnologia de Container só opera em ambientes on-premise."
+    ],
+    correct: 2,
+    justification: "Uma VM é uma caixa densa: ela traz consigo todo um OS. Contêineres, em contrapartida, empacotam puramente as dependências necessárias da aplicação e reusam o Kernel e processos nativos do Linux host, inicializando em frações de segundos."
+  },
+  {
+    topic: "Virtualização",
+    text: "O Docker utiliza tecnologias nativas do Kernel do Linux para garantir o isolamento e a limitação de recursos dos contêineres. Quais são essas tecnologias primárias?",
+    options: [
+      "Hyper-V e VirtualBox",
+      "Namespaces e cgroups (Control Groups)",
+      "Virtualização assistida por hardware (Intel VT-x)",
+      "POSIX threads e semáforos",
+      "NAT estrito e VLANs 802.1Q"
+    ],
+    correct: 1,
+    justification: "No núcleo operacional da conteinerização moderna encontramos os Namespaces (criando isolamento de pids, rede e arquivos virtuais impedindo que um container acesse as instâncias dos outros) alinhados com cgroups que atritam e controlam o uso bruto de CPU, RAM e Disco."
+  },
+  {
+    topic: "Virtualização",
+    text: "Em ambientes de virtualização de data centers corporativos, a capacidade de mover uma VM em execução de um servidor físico para outro servidor sem causar interrupção perceptível no serviço é chamada de:",
+    options: [
+      "Snapshot a quente",
+      "Live Migration (Migração ao vivo)",
+      "Clonagem de Máquina",
+      "Auto Scaling",
+      "Failover assíncrono"
+    ],
+    correct: 1,
+    justification: "Live Migration (ex: vMotion em VMware) transporta todo o estado de memória RAM da VM em background e realiza o switch do hipervisor subitamente na nova máquina sem que a sessão de quem estava a utilizando caia, permitindo trocas e manutenções."
+  },
+
+  // ─── COMPUTAÇÃO EM NUVEM ───
+  {
+    topic: "Nuvem",
+    text: "O modelo de computação em nuvem IaaS (Infrastructure as a Service) fornece qual camada de recursos como serviço para o cliente?",
+    options: [
+      "Aplicativos prontos e licenciados que rodam diretamente no navegador.",
+      "Plataformas completas de desenvolvimento onde o cliente foca apenas no código da aplicação.",
+      "Hardware virtualizado provisionado sob demanda (Máquinas Virtuais, armazenamento em bloco, redes virtuais), sendo o cliente responsável por gerenciar o SO e os dados.",
+      "Manutenção física de hardware corporativo alocado on-premise.",
+      "Softwares de escritório em formato de assinatura."
+    ],
+    correct: 2,
+    justification: "No IaaS (ex: Amazon EC2), o provedor se responsabiliza por manter a eletricidade, o hardware físico host e a virtualização base. A você resta o controle e acesso total perante a Máquina Virtual crua instalada ali, da raíz de SO ao firewall e configurações web."
+  },
+  {
+    topic: "Nuvem",
+    text: "Considerando os modelos de serviço de Cloud Computing, identifique qual alternativa exemplifica clássicamente um SaaS (Software as a Service):",
+    options: [
+      "Amazon EC2, fornecendo uma instância Linux.",
+      "Microsoft 365 (Office Online) e Gmail, entregando a aplicação pronta e configurada para uso final.",
+      "O Hypervisor VMware ESXi instalado na matriz da empresa.",
+      "Serviço Google App Engine, provendo ambiente para deploy de código Node.js.",
+      "Servidores físicos bare-metal alugados em data center remoto."
+    ],
+    correct: 1,
+    justification: "O SaaS tem como pilar a comodidade extrema à custa de toda a gerência de sistema: provedores sustentam de ponta a ponta o software em sua nuvem e disponibilizam unicamente o acesso por assinatura ou interfaces web aos usuários, como o Google Workspace e o Office Online."
+  },
+  {
+    topic: "Nuvem",
+    text: "No modelo PaaS (Platform as a Service), a equipe contratante concentra seus esforços e responsabilidades em qual aspecto?",
+    options: [
+      "Atualização de patches de segurança e customização do Kernel do servidor hospedeiro.",
+      "Alocação física de energia térmica e roteadores nos datacenters do provedor.",
+      "Desenvolvimento, implantação do código da aplicação (deploy) e gestão dos dados a ela atrelados, sem precisar administrar o servidor por baixo.",
+      "Criação de regras de firewall estritas nos Switches Core da nuvem.",
+      "Gestão de licenças de hypervisors Tipo 1."
+    ],
+    correct: 2,
+    justification: "Plataformas como Serviço (PaaS) intermediam a lacuna do IaaS. Eles providenciam o compilador e banco de dados já prontos para um Desenvolvedor empurrar seu código via Pipeline e coloca-lo no ar (Deploy), ignorando sumariamente a administração de Sistema Operacional, que é assumida pelo provedor."
+  },
+  {
+    topic: "Nuvem",
+    text: "A elasticidade (ou escalabilidade elástica) em computação em nuvem permite que os sistemas:",
+    options: [
+      "Aumentem permanentemente o custo financeiro base da assinatura.",
+      "Sejam imunes a falhas de rede no provedor local.",
+      "Aumentem ou diminuam o provisionamento de recursos computacionais automaticamente em tempo real, baseando-se em flutuações de demanda do tráfego.",
+      "Modifiquem a arquitetura de rede de IPv4 para IPv6 dinamicamente.",
+      "Garantam que os dados jamais sairão do país de origem."
+    ],
+    correct: 2,
+    justification: "Elasticidade é o fenômeno do Auto-Scaling de nuvem: o sistema atua como uma sanfona alocando dinamicamente e sem intervenção humana novas VMs ou hardware extra em horários de pico (scale-out) para comportar acessos e diminuindo os servidores nos horários calmos (scale-in)."
+  },
+  {
+    topic: "Nuvem",
+    text: "Num cenário de Computação em Nuvem Híbrida (Hybrid Cloud), a infraestrutura caracteriza-se pela:",
+    options: [
+      "Combinação do uso de infraestrutura Privada corporativa (on-premise) integrada de modo transparente e seguro aos recursos escaláveis de uma Nuvem Pública.",
+      "Transição temporária onde uma empresa opera localmente mas faz backups via CD-ROM.",
+      "Uso exclusivo de recursos públicos, divididos entre provedores diferentes (ex: AWS e Azure simultaneamente).",
+      "Rede fechada governamental isolada sem roteadores BGP.",
+      "Múltiplas VLANs dentro de um único switch gerenciável."
+    ],
+    correct: 0,
+    justification: "A Nuvem Híbrida conecta (normalmente via túnel VPN ou links privados diretos) toda a robustez legada do datacenter local da empresa (On-Premise) a uma das megaprovedoras cloud. Isso permite armazenar dados altamente confidenciais dentro da matriz da empresa enquanto estende poder de processamento volátil para a parte de Cloud pública sem criar atrito."
+  },
+  {
+    topic: "Nuvem",
+    text: "Qual alternativa descreve corretamente o conceito de Alta Disponibilidade (HA) na arquitetura de data centers em nuvem?",
+    options: [
+      "A capacidade de um disco rígido ler dados a 10.000 RPM.",
+      "Capacidade da infraestrutura de permanecer operacional e acessível de forma contínua, utilizando redundâncias (como Zonas de Disponibilidade) para tolerar falhas físicas.",
+      "Velocidade na qual o código fonte é compilado pelo PaaS.",
+      "A garantia contratual de que os dados não serão criptografados.",
+      "O uso obrigatório de provedores em continentes diferentes."
+    ],
+    correct: 1,
+    justification: "Alta Disponibilidade (High Availability) descreve arquiteturas de engenharia cujo desígnio é jamais falhar catastroficamente: replicando de maneira redundante seus bancos de dados e utilizando Balanceadores de Carga que enviam os usuários para o Servidor B silenciosamente caso a máquina do Servidor A pegue fogo."
+  },
+
+  // ─── SEGURANÇA E VPN ───
+  {
+    topic: "Segurança",
+    text: "No contexto da Segurança de Redes, um Firewall de inspeção de estados (stateful) atua principalmente:",
+    options: [
+      "Apenas substituindo antivírus na detecção de malware em discos locais.",
+      "Elevando o alcance do espectro Wi-Fi.",
+      "Monitorando o tráfego nas camadas de rede e transporte (L3 e L4), bloqueando ou permitindo pacotes com base em um conjunto de regras e no estado da conexão.",
+      "Garantindo a escalabilidade de containers Kubernetes.",
+      "Atribuindo endereços IP dinâmicos para a rede LAN."
+    ],
+    correct: 2,
+    justification: "Diferente dos tradicionais e defasados filtros packet-based, um Firewall Stateful salva em sua memória de forma sagaz e relacional as tabelas de \"sessões iniciadas\". Quando seu PC interno contata um site de fora, o tráfego de retorno do site passa limpo por conta do log da sessão ativa sem precisar de regras manuais perigosas abrindo portas de fora para dentro da empresa."
+  },
+  {
+    topic: "Segurança",
+    text: "A Virtual Private Network (VPN) site-to-site tem um papel central no design de redes corporativas. Qual é seu princípio base?",
+    options: [
+      "Aumentar nativamente a velocidade dos links de internet dos usuários finais.",
+      "Estabelecer um túnel lógico e criptografado pela Internet, permitindo que escritórios geograficamente distantes se comuniquem de forma segura como se estivessem na mesma LAN.",
+      "Substituir o uso de roteadores Wi-Fi por redes móveis 5G.",
+      "Fornecer IPs públicos exclusivos para todo o maquinário da empresa.",
+      "Ignorar políticas de firewall interno aplicando um bypass físico."
+    ],
+    correct: 1,
+    justification: "A topologia de VPN entre Sites consolida dois roteadores na ponta de ambas as instalações físicas de uma mesma empresa a enveloparem e criptografarem toda a transmissão corporativa através de um túnel (ex. IPSec). Ele corta espaço público blindando a comunicação e permite que os escritórios atuem juntos na mesma rede matriz."
+  },
+  {
+    topic: "Segurança",
+    text: "O protocolo TLS (sucessor do SSL) é fundamental nas comunicações web modernas (HTTPS) pois ele provê:",
+    options: [
+      "Balanceamento de carga em nuvem (Load Balancing).",
+      "Confidencialidade (criptografia) e integridade dos dados transmitidos entre o cliente e o servidor.",
+      "Redução drástica do tamanho dos pacotes de imagem (compressão).",
+      "Execução de máquinas virtuais diretamente no navegador.",
+      "Mapeamento de portas automáticas no NAT doméstico."
+    ],
+    correct: 1,
+    justification: "O Transport Layer Security (TLS) trabalha sob a malha de algoritmos de chave asimétrica para travar interceptações Man-In-The-Middle e criptografar o texto de senhas, cartões de crédito e requisições na Web, autenticando servidores legítimos por meio de Certificados emitidos."
+  },
+  {
+    topic: "Segurança",
+    text: "Qual é o principal objetivo de um ataque cibernético do tipo DoS ou DDoS (Distributed Denial of Service)?",
+    options: [
+      "Capturar credenciais e senhas bancárias em texto claro.",
+      "Injetar comandos SQL no banco de dados corporativo.",
+      "Sobrecaregar um servidor, recurso ou link de rede com tráfego massivo para torná-lo indisponível aos usuários legítimos.",
+      "Invadir o Hypervisor para clonar máquinas virtuais secretamente.",
+      "Assumir o controle do domínio DNS global."
+    ],
+    correct: 2,
+    justification: "No ataque de Negação de Serviço, o alvo primário não é necessariamente o roubo do dado interno (ex-filtração), e sim a indisponibilidade total e intencional dos serviços providos. Hackers orquestram vastas botnets de máquinas zumbificadas para atirar bilhões de requisições inúteis até a capacidade computacional e a banda larga do alvo exaurir e cair completamente."
+  }
+];
+
+// ─── QUIZ LOGIC ───
+document.getElementById('totalQuestionsDisplay').textContent = questions.length;
+document.getElementById('scoreNumber').textContent = `0 / ${questions.length}`;
+
+function renderQuiz() {
+  const container = document.getElementById('quiz-container');
+  container.innerHTML = '';
+  questions.forEach((q, i) => {
+    const card = document.createElement('div');
+    card.className = 'question-card';
+    card.id = `card-${i}`;
+    card.innerHTML = `
+      <div class="question-header">
+        <div class="q-number">${String(i+1).padStart(2,'0')}</div>
+        <div>
+          <span class="q-topic">${q.topic}</span>
+          <div class="q-text">${q.text}</div>
+        </div>
+      </div>
+      <div class="options">
+        ${q.options.map((opt, j) => `
+          <label class="option" id="opt-${i}-${j}">
+            <input type="radio" name="q${i}" value="${j}" id="r-${i}-${j}" onchange="selectOption(${i}, ${j})">
+            <label for="r-${i}-${j}">${opt}</label>
+          </label>
+        `).join('')}
+      </div>
+      <div class="feedback" id="fb-${i}"></div>
+    `;
+    container.appendChild(card);
+  });
+}
+
+function selectOption(qIndex, optIndex) {
+  const options = document.querySelectorAll(`input[name="q${qIndex}"]`);
+  options.forEach((_, j) => {
+    const el = document.getElementById(`opt-${qIndex}-${j}`);
+    el.classList.remove('selected-option');
+  });
+  document.getElementById(`opt-${qIndex}-${optIndex}`).classList.add('selected-option');
+}
+
+function gradeQuiz() {
+  let correct = 0, wrong = 0, skipped = 0;
+
+  questions.forEach((q, i) => {
+    const card = document.getElementById(`card-${i}`);
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    const fb = document.getElementById(`fb-${i}`);
+
+    q.options.forEach((_, j) => {
+      const optEl = document.getElementById(`opt-${i}-${j}`);
+      optEl.classList.add('disabled');
+      optEl.classList.remove('selected-option');
+    });
+    
+    // HTML block da justificativa adicionado dinamicamente
+    const justificationHTML = `<div class="feedback-justification"><strong>Justificativa:</strong> ${q.justification}</div>`;
+
+    if (!selected) {
+      skipped++;
+      document.getElementById(`opt-${i}-${q.correct}`).classList.add('correct-option');
+      fb.className = 'feedback wrong';
+      fb.innerHTML = `
+        <div class="feedback-status"><span>⚠</span> <div>Não respondida. A resposta correta é: <strong>${q.options[q.correct]}</strong></div></div>
+        ${justificationHTML}
+      `;
+      card.classList.add('answered-wrong');
+    } else {
+      const val = parseInt(selected.value);
+      if (val === q.correct) {
+        correct++;
+        document.getElementById(`opt-${i}-${val}`).classList.add('correct-option');
+        fb.className = 'feedback correct';
+        fb.innerHTML = `
+          <div class="feedback-status"><span>✓</span> <div>Resposta correta!</div></div>
+          ${justificationHTML}
+        `;
+        card.classList.add('answered-correct');
+      } else {
+        wrong++;
+        document.getElementById(`opt-${i}-${val}`).classList.add('wrong-option');
+        document.getElementById(`opt-${i}-${q.correct}`).classList.add('correct-option');
+        fb.className = 'feedback wrong';
+        fb.innerHTML = `
+          <div class="feedback-status"><span>✗</span> <div>Incorreta. A resposta correta é: <strong>${q.options[q.correct]}</strong></div></div>
+          ${justificationHTML}
+        `;
+        card.classList.add('answered-wrong');
+      }
+    }
+    
+    fb.style.display = 'flex'; // Exibe a área de feedback
+  });
+
+  const total = questions.length;
+  const pct = Math.round((correct / total) * 100);
+  document.getElementById('scoreNumber').textContent = `${correct} / ${total}`;
+  document.getElementById('scorePercent').textContent = `${pct}%`;
+  document.getElementById('correctCount').textContent = correct;
+  document.getElementById('wrongCount').textContent = wrong;
+  document.getElementById('skipCount').textContent = skipped;
+
+  const msgs = [
+    [0, 40, '📚 Continue estudando! Revise o Guia de Estudos e tente novamente.'],
+    [40, 60, '🔍 Bom começo! Foque nos conceitos chave onde cometeu erros.'],
+    [60, 80, '👍 Bom desempenho! Você compreende bem a base da Infraestrutura.'],
+    [80, 95, '🌟 Ótimo resultado! Você domina Redes, Nuvem e Virtualização.'],
+    [95, 101, '🏆 Excelente! Desempenho extraordinário na avaliação!']
+  ];
+  const msgObj = msgs.find(([lo, hi]) => pct >= lo && pct < hi);
+  const msg = msgObj ? msgObj[2] : msgs[0][2];
+  
+  const emojis = ['😓','🤔','😊','😎','🏆'];
+  const emojiIndex = msgs.findIndex(([lo, hi]) => pct >= lo && pct < hi);
+  const emoji = emojis[emojiIndex !== -1 ? emojiIndex : 0];
+
+  document.getElementById('scoreEmoji').textContent = emoji;
+  document.getElementById('scoreMessage').textContent = msg;
+
+  const circumference = 314;
+  const offset = circumference - (pct / 100) * circumference;
+  setTimeout(() => {
+    document.getElementById('progressCircle').style.strokeDashoffset = offset;
+  }, 100);
+
+  document.getElementById('scoreOverlay').classList.add('active');
+}
+
+function resetQuiz() {
+  document.getElementById('scoreOverlay').classList.remove('active');
+  renderQuiz();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
