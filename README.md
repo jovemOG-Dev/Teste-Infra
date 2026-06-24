@@ -70,4 +70,4 @@ O simulado está disponível online e pode ser acessado diretamente pelo navegad
 
 ## 🎓 Contexto Acadêmico
 
-> Projeto desenvolvido como ferramenta de revisão para avaliação de **Infraestrutura de TI** — ADS Senac, 2024/2025.
+> Projeto desenvolvido como ferramenta de revisão para avaliação de **Infraestrutura de TI** — ADS Senac, 2026.
