@@ -65,8 +65,5 @@ O simulado está disponível online e pode ser acessado diretamente pelo navegad
 - CSS3 (tema escuro, variáveis CSS, responsividade, animações)
 - JavaScript Vanilla (renderização dinâmica das questões, lógica de correção)
 
----
-
-## 🎓 Contexto Acadêmico
-
+#
 > Projeto desenvolvido como ferramenta de revisão para avaliação de **Infraestrutura de TI** — ADS Senac, 2026.
