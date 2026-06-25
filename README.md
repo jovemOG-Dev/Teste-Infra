@@ -55,8 +55,7 @@ O simulado está disponível online e pode ser acessado diretamente pelo navegad
 1. Acesse o link do projeto:
    **[jovemog-dev.github.io/Teste-Infra/](jovemog-dev.github.io/Teste-Infra/)**
 2. Responda às questões de múltipla escolha selecionando a alternativa desejada.
-3. Preencha as questões dissertativas nas áreas de texto.
-4. Clique em **"Finalizar e Validar Respostas"** para visualizar o gabarito e o feedback de cada questão.
+3. Clique em **"Finalizar e Validar Respostas"** para visualizar o gabarito e o feedback de cada questão.
 
 ---
 
